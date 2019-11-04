@@ -1,1 +1,0 @@
-ski conditions readme

@@ -1,0 +1,38 @@
+version: "3"
+services:
+  db:
+    container_name: ski_conditions.db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ski_conditions
+    image: postgres:11.1-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # NOTE: If you need to access the database from an external tool,
+    # expose this port and restart the container.
+    # ports:
+    #   - 5432:5432
+    restart: always
+  app:
+    # Instruct Gunicorn to reload code when it is changed locally.
+    command: --reload
+    environment:
+      - DEBUG=true
+      - SECRET_KEY=replace-me
+      - DATABASE_URL=psql://postgres:postgres@ski_conditions.db:5432/ski_conditions?connect_timeout=60
+      # NOTE: Comment the line below to use S3 for storage.
+      # Do NOT use the the production bucket for local development!
+      - DEFAULT_FILE_STORAGE=django.core.files.storage.FileSystemStorage
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_STORAGE_BUCKET_NAME=
+    links:
+      - db
+    ports:
+      # This port is primarily exposed for debugging. Use the web service's port to properly access the service.
+      - 8000:8000
+    volumes:
+      - .:/app/ski_conditions:cached
+volumes:
+  db-data:
