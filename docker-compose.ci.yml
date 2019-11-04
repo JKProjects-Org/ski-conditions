@@ -20,3 +20,5 @@ services:
       - DEFAULT_FILE_STORAGE=django.core.files.storage.FileSystemStorage
     links:
       - db
+    volumes:
+      - ./test_output:/app/ski_conditions/test_output
