@@ -13,6 +13,7 @@ install:
   - make docker.build
 
 script:
+  - mkdir test_output
   - docker-compose -f docker-compose.yml -f docker-compose.ci.yml run app "make quality"
   - docker-compose -f docker-compose.yml -f docker-compose.ci.yml run app "./wait-for-it.sh db:5432 -- make detect_missing_migrations"
   - docker-compose -f docker-compose.yml -f docker-compose.ci.yml run app "./wait-for-it.sh db:5432 -- make migrate"
@@ -21,8 +22,8 @@ script:
 
 after_success:
   - pip install -U codecov
-  - docker exec -t ski_conditions.app coverage xml
-  - codecov
+  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml run app "coverage xml"
+  - codecov --file test_output/coverage.xml
 
 # TODO Follow steps at https://docs.travis-ci.com/user/environment-variables#encrypting-environment-variables
 # to define the following environment variables:

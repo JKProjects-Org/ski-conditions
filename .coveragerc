@@ -1,5 +1,6 @@
 [run]
 branch=True
+data_file=test_output/.coverage
 source=ski_conditions
 omit =
     ski_conditions/settings*
@@ -10,3 +11,6 @@ omit =
     *admin.py
     *static*
     *templates*
+
+[xml]
+output=test_output/coverage.xml
