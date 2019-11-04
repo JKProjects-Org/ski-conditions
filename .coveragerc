@@ -1,0 +1,12 @@
+[run]
+branch=True
+source=ski_conditions
+omit =
+    ski_conditions/settings*
+    ski_conditions/conf*
+    *conftest.py
+    *wsgi.py
+    *migrations*
+    *admin.py
+    *static*
+    *templates*
