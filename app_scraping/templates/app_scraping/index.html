@@ -1,0 +1,18 @@
+{% if resort_list %}
+    <ul>
+    {% for resort in resort_list %}
+        <li>{{ resort.resort_name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No resorts available</p>
+{% endif %}
+
+
+
+
+
+
+
+
+
