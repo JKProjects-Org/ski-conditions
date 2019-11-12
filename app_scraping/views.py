@@ -42,15 +42,27 @@ def ski_scraper(url):
     # look for trail and lift totals in class c118__number2--v1
     trail_totals = trails_summary.find_all(class_='c118__number2--v1')
 
-    # assign text to variables
-    total_trails = trail_totals[2].get_text()[2:]
-    total_lifts = trail_totals[3].get_text()[2:]
+    if 'heavenly' in url:
+        # assign text to variables
+        total_trails = trail_totals[3].get_text()[2:]
+        total_lifts = trail_totals[1].get_text()[2:]
 
-    # assign ints to variables
-    acres_open = int(trails_summary_items[0].get_text())
-    terrain_percent = int(trails_summary_items[1].get_text())
-    trails_open = int(trails_summary_items[2].get_text())
-    lifts_open = int(trails_summary_items[3].get_text())
+        # assign ints to variables
+        acres_open = int(trails_summary_items[0].get_text())
+        terrain_percent = int(trails_summary_items[2].get_text())
+        trails_open = int(trails_summary_items[3].get_text())
+        lifts_open = int(trails_summary_items[1].get_text())
+
+    elif 'keystone' in url:
+        # assign text to variables
+        total_trails = trail_totals[2].get_text()[2:]
+        total_lifts = trail_totals[3].get_text()[2:]
+
+        # assign ints to variables
+        acres_open = int(trails_summary_items[0].get_text())
+        terrain_percent = int(trails_summary_items[1].get_text())
+        trails_open = int(trails_summary_items[2].get_text())
+        lifts_open = int(trails_summary_items[3].get_text())
 
     return total_trails, total_lifts, acres_open, terrain_percent, trails_open, lifts_open
 
@@ -66,6 +78,7 @@ def index(request):
     # create cursor to go through database
     cur = db.cursor()
     
+    ######## KEYSTONE
     # run scraper to get latest keystone data
     url = 'https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
 
@@ -75,28 +88,43 @@ def index(request):
             ski_scraper(url)
 
 
-    # testing creating a SkiResort object
-    # should be updating existing entries
-    try:
-        # resort entry already exists
-        cur.execute(
-                f'''UPDATE app_scraping_skiresort
-                SET trails_open = {trails_open},
-                    lifts_open = {lifts_open},
-                    acres_open = {acres_open},
-                    terrain_percent = {terrain_percent}
-                WHERE resort_name = '{resort_name}' and id=1;
-                ''')
-
-    except:
-        # new resort entry
-
-        cur.execute(
-                f'''INSERT INTO app_scraping_skiresort (resort_name, trails_open, lifts_open, acres_open, 
+    # insert data into table if resort doesn't exist
+    # otherwise, update existing resort data
+    cur.execute(
+            f'''INSERT INTO app_scraping_skiresort (resort_name, trails_open, lifts_open, acres_open, 
                 terrain_percent, total_trails, total_lifts) 
-                VALUES ({resort_name}, {trails_open}, {lifts_open}, {acres_open}, {terrain_percent}, 
-                {total_trails},{total_lifts});''')
+                VALUES ('{resort_name}', {trails_open}, {lifts_open}, {acres_open}, {terrain_percent}, 
+                {total_trails},{total_lifts})
+                ON CONFLICT (resort_name) DO UPDATE
+                    SET trails_open = {trails_open},
+                        lifts_open = {lifts_open},
+                        acres_open = {acres_open},
+                        terrain_percent = {terrain_percent}
+                    ''')
+
+    db.commit()
         
+    ######### HEAVENLY
+    # run scraper to get latest Heavenly data
+    url = 'https://www.skiheavenly.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
+    resort_name = 'Heavenly'
+    total_trails, total_lifts, acres_open, terrain_percent, trails_open, lifts_open = \
+            ski_scraper(url)
+
+    # insert data into table if resort doesn't exist
+    # otherwise, update existing resort data
+    cur.execute(
+            f'''INSERT INTO app_scraping_skiresort (resort_name, trails_open, lifts_open, acres_open, 
+                terrain_percent, total_trails, total_lifts) 
+                VALUES ('{resort_name}', {trails_open}, {lifts_open}, {acres_open}, {terrain_percent}, 
+                {total_trails},{total_lifts})
+                ON CONFLICT (resort_name) DO UPDATE
+                    SET trails_open = {trails_open},
+                        lifts_open = {lifts_open},
+                        acres_open = {acres_open},
+                        terrain_percent = {terrain_percent}
+                    ''')
+
     db.commit()
     db.close()
     
