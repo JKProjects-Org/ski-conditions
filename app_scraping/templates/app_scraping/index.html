@@ -2,6 +2,10 @@
     <ul>
     {% for resort in resort_list %}
         <li>{{ resort.resort_name }}</li>
+        <p>Trails Open: {{ resort.trails_open }}/{{ resort.total_trails }}</p>
+        <p>Lifts Open: {{ resort.lifts_open }}/{{ resort.total_lifts }}</p>
+        <p>Acres Open: {{ resort.acres_open }}</p>
+        <p>Terrain Open: {{ resort.terrain_percent }}%</p>
     {% endfor %}
     </ul>
 {% else %}
