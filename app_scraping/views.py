@@ -80,7 +80,7 @@ def index(request):
                     lifts_open = {lifts_open},
                     acres_open = {acres_open},
                     terrain_percent = {terrain_percent}
-                WHERE resort_name = {resort_name} and id=1;
+                WHERE resort_name = '{resort_name}' and id=1;
                 ''')
 
     except:
