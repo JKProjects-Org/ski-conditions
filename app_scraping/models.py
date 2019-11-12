@@ -4,7 +4,7 @@ from django.utils import timezone
 
 # Create your models here.
 class SkiResort(models.Model):
-    resort_name = models.CharField(max_length=200)
+    resort_name = models.CharField(max_length=200, unique=True)
     trails_open = models.IntegerField(default=0)
     lifts_open = models.IntegerField(default=0)
     acres_open = models.IntegerField(default=0)
