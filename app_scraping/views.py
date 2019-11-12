@@ -1,11 +1,11 @@
+import psycopg2
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
 from django.utils import timezone
 
-import psycopg2
-
 from .models import SkiResort
+
 
 def ski_scraper(url):
     '''
