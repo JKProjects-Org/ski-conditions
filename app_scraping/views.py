@@ -1,3 +1,4 @@
+import environ
 import psycopg2
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -56,8 +57,12 @@ def ski_scraper(url):
 
 # Create your views here.
 def index(request):
-    # create connection to database db_ski
-    db = psycopg2.connect(database = 'db_ski')
+    # get database name from environment
+    env = environ.Env(DEBUG=(bool, False), )
+    
+    # create connection to database 
+    db = psycopg2.connect(database = env.db()['NAME'])
+
     # create cursor to go through database
     cur = db.cursor()
     
