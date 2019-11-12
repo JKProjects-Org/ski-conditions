@@ -1,9 +1,7 @@
 import environ
 import psycopg2
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.template import loader
-from django.utils import timezone
 
 from .models import SkiResort
 
@@ -90,17 +88,30 @@ def index(request):
 
     # insert data into table if resort doesn't exist
     # otherwise, update existing resort data
-    cur.execute(
-            f'''INSERT INTO app_scraping_skiresort (resort_name, trails_open, lifts_open, acres_open, 
-                terrain_percent, total_trails, total_lifts) 
-                VALUES ('{resort_name}', {trails_open}, {lifts_open}, {acres_open}, {terrain_percent}, 
-                {total_trails},{total_lifts})
-                ON CONFLICT (resort_name) DO UPDATE
-                    SET trails_open = {trails_open},
-                        lifts_open = {lifts_open},
-                        acres_open = {acres_open},
-                        terrain_percent = {terrain_percent}
-                    ''')
+
+    ski_resort, created = SkiResort.objects.update_or_create(
+        resort_name=resort_name,
+        defaults={
+            'trails_open': trails_open,
+            'lifts_open': lifts_open,
+            'acres_open': acres_open,
+            'terrain_percent': terrain_percent,
+            'total_trails': total_trails,
+            'total_lifts': total_lifts,
+        }
+    )
+
+    # cur.execute(
+    #         f'''INSERT INTO app_scraping_skiresort (resort_name, trails_open, lifts_open, acres_open,
+    #             terrain_percent, total_trails, total_lifts)
+    #             VALUES ('{resort_name}', {trails_open}, {lifts_open}, {acres_open}, {terrain_percent},
+    #             {total_trails},{total_lifts})
+    #             ON CONFLICT (resort_name) DO UPDATE
+    #                 SET trails_open = {trails_open},
+    #                     lifts_open = {lifts_open},
+    #                     acres_open = {acres_open},
+    #                     terrain_percent = {terrain_percent}
+    #                 ''')
 
     db.commit()
         
