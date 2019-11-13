@@ -1,6 +1,7 @@
 from django.db import DatabaseError, connection
 from django.http import JsonResponse
 from django.utils import timezone
+from django.views.generic import TemplateView
 
 from .constants import Status
 
@@ -32,3 +33,7 @@ def health(_):
 
     status = 200 if overall_status == Status.OK else 503
     return JsonResponse(data, status=status)
+
+
+class HomePageView(TemplateView):
+    template_name = 'home.html'
