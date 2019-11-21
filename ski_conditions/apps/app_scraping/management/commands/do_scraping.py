@@ -49,6 +49,10 @@ class KeystoneScraper(AbstractVailScraper):
         return {
             'total_trails': new_total_trails,
             'total_lifts': new_total_lifts,
+            'acres_open': new_acres_open,
+            'terrain_percent': new_terrain_percent,
+            'trails_open': new_trails_open,
+            'lifts_open': new_lifts_open,
         }
 
 
@@ -72,6 +76,10 @@ class HeavenlyScraper(AbstractVailScraper):
         return {
             'total_trails': new_total_trails,
             'total_lifts': new_total_lifts,
+            'acres_open': new_acres_open,
+            'terrain_percent': new_terrain_percent,
+            'trails_open': new_trails_open,
+            'lifts_open': new_lifts_open,
         }
 
 
@@ -80,22 +88,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         scrapers = [
-            KeystoneScraper()
+            KeystoneScraper(),
+            # HeavenlyScraper(),
         ]
 
         for scraper in scrapers:
-            name = scraper.name,
+            name = scraper.name
             scraped = scraper.scrape()
 
-            # TODO Expose the rest of the fields
-            ski_resort, created = SkiResort.objects.update_or_create(
+            SkiResort.objects.update_or_create(
                 resort_name=name,
-                total_trails=scraped['new_total_trails'],
-                # total_lifts=new_total_lifts,
-                # acres_open=new_acres_open,
-                # terrain_percent=new_terrain_percent,
-                # trails_open=new_trails_open,
-                # lifts_open=new_lifts_open,
+                defaults={
+                    'total_trails': scraped['total_trails'],
+                    'acres_open': scraped['acres_open'],
+                    'terrain_percent': scraped['terrain_percent'],
+                    'trails_open': scraped['trails_open'],
+                    'lifts_open': scraped['lifts_open'],
+                    'total_lifts': scraped['total_lifts'],
+                }
             )
 
         self.stdout.write('SkiResort model updated')

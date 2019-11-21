@@ -1,7 +1,8 @@
 # import libraries
+import csv
+
 import requests
 from bs4 import BeautifulSoup
-import csv
 
 # create a file to write to, add headers rows
 f = csv.writer(open('z-artist-names.csv', 'w'))
@@ -40,4 +41,3 @@ for item in pages:
         print(names)
         print(links)
         f.writerow([names, links])
-

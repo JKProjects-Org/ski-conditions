@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 class SkiResort(models.Model):
@@ -11,4 +10,3 @@ class SkiResort(models.Model):
 
     total_trails = models.IntegerField(default=0)
     total_lifts = models.IntegerField(default=0)
-

@@ -53,6 +53,3 @@ total_trails, total_lifts, acres_open, terrain_percent, trails_open, lifts_open 
         ski_scraper(url)
 
 print(total_trails, total_lifts, acres_open, terrain_percent, trails_open, lifts_open)
-
-
-

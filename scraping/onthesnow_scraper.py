@@ -57,22 +57,3 @@ print(f'Beginner Runs: {keystone_percent_green}')
 print(f'Intermediate Runs: {keystone_percent_blue}')
 print(f'Advanced Runs: {keystone_percent_black}')
 print(f'Expert Runs: {keystone_percent_double_black}')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
