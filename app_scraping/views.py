@@ -1,5 +1,6 @@
 import environ
 import psycopg2
+from django.core import management
 from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -9,9 +10,12 @@ from django.utils import timezone
 from .models import SkiResort
 
 
-
 # Create your views here.
 def index(request):
+    # run management command to do scraping from here for now
+    # TODO: put in cronjob
+    management.call_command('do_scraping')
+
     '''
     # get database name from environment
     env = environ.Env(DEBUG=(bool, False), )
