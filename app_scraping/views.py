@@ -3,9 +3,7 @@ import psycopg2
 from django.core import management
 from django.db import connection
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.template import loader
-from django.utils import timezone
 
 from .models import SkiResort
 
@@ -49,6 +47,18 @@ def index(request):
                         acres_open = {acres_open},
                         terrain_percent = {terrain_percent}
                     ')
+
+    ski_resort, created = SkiResort.objects.update_or_create(
+        resort_name=resort_name,
+        defaults={
+            'trails_open': trails_open,
+            'lifts_open': lifts_open,
+            'acres_open': acres_open,
+            'terrain_percent': terrain_percent,
+            'total_trails': total_trails,
+            'total_lifts': total_lifts,
+        }
+    )
 
     db.commit()
         
