@@ -33,7 +33,7 @@ class Command(BaseCommand):
             # look for trail and lift totals
             trail_totals = trails_summary.find_all(class_='c118__number2--v1')
 
-            if url == url_heavenly:
+            if 'heavenly' in url:
                 # assign text to variables
                 total_trails = int(trail_totals[3].get_text()[2:])
                 total_lifts = int(trail_totals[1].get_text()[2:])
@@ -45,8 +45,10 @@ class Command(BaseCommand):
 
                 name = "Heavenly"
 
+                #k = SkiResort.objects.get(resort_name__iexact = 'Heavenly')
+
             
-            elif url == url_keystone:
+            elif 'keystone' in url:
 
                 total_trails = int(trail_totals[2].get_text()[2:])
                 total_lifts = int(trail_totals[3].get_text()[2:])
@@ -58,11 +60,26 @@ class Command(BaseCommand):
 
                 name = "Keystone"
 
-            k = SkiResort.objects.get(resort_name = name)
+                #k = SkiResort.objects.get(resort_name__iexact = 'Keystone')
+
+
+            ski_resort, created = SkiResort.objects.update_or_create(
+                    resort_name = name,
+                    total_trails = total_trails,
+                    total_lifts = total_lifts,
+                    acres_open = acres_open,
+                    terrain_percent = terrain_percent,
+                    trails_open = trails_open,
+                    lifts_open = lifts_open,
+                    )
+
+            '''
+            k = SkiResort.objects.get(**{'resort_name__iexact': name})
             k.trails_open = trails_open
             k.lifts_open = lifts_open
             k.acres_open = acres_open
             k.terrain_percent = terrain_percent
             k.save()
+            '''
 
         self.stdout.write('SkiResort model updated')
