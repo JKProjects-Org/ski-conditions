@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand
 
-from app_scraping.models import SkiResort
+from ski_conditions.apps.app_scraping.models import SkiResort
 
 
 class Command(BaseCommand):
