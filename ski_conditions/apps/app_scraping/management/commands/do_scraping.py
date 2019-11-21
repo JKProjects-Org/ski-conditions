@@ -11,9 +11,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # list of urls
         url_keystone = \
-                'https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
+            'https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
         url_heavenly = \
-                'https://www.skiheavenly.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
+            'https://www.skiheavenly.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
         
         # place urls in list, loop over them
         url_list = [url_keystone, url_heavenly]
@@ -25,10 +25,10 @@ class Command(BaseCommand):
             soup = BeautifulSoup(page.text, 'html.parser')
 
             # search for class c118__number1--v1
-            trails_summary = soup.find(class_ = 'terrain_summary row')
+            trails_summary = soup.find(class_='terrain_summary row')
 
             # look for stuff in <span> tags
-            trails_summary_items = trails_summary.find_all(class_= 'c118__number1--v1')
+            trails_summary_items = trails_summary.find_all(class_='c118__number1--v1')
 
             # look for trail and lift totals
             trail_totals = trails_summary.find_all(class_='c118__number2--v1')
@@ -45,8 +45,6 @@ class Command(BaseCommand):
 
                 name = "Heavenly"
 
-
-            
             elif 'keystone' in url:
 
                 new_total_trails = int(trail_totals[2].get_text()[2:])
@@ -59,25 +57,16 @@ class Command(BaseCommand):
 
                 name = "Keystone"
 
-
-
             ski_resort, created = SkiResort.objects.update_or_create(
                     resort_name = name,
                     total_trails = new_total_trails,
                     total_lifts = new_total_lifts,
-                    acres_open = new_acres_open,
-                    terrain_percent = new_terrain_percent,
-                    trails_open = new_trails_open,
-                    lifts_open = new_lifts_open,
+                    defaults = {
+                        'acres_open': new_acres_open,
+                        'terrain_percent': new_terrain_percent,
+                        'trails_open': new_trails_open,
+                        'lifts_open': new_lifts_open,
+                        },
                     )
-
-            '''
-            k = SkiResort.objects.get(**{'resort_name__iexact': name})
-            k.trails_open = trails_open
-            k.lifts_open = lifts_open
-            k.acres_open = acres_open
-            k.terrain_percent = terrain_percent
-            k.save()
-            '''
 
         self.stdout.write('SkiResort model updated')
