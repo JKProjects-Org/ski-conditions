@@ -11,9 +11,9 @@ class SkiResort(models.Model):
     terrain_percent = models.IntegerField(default=0)
 
     # string of total trails, ex. "/ 128"
-    total_trails = models.CharField(max_length=200, default='0')
+    total_trails = models.IntegerField(default=0)
     # string of total lifts, ex. "/ 21"
-    total_lifts = models.CharField(max_length=200, default='0')
+    total_lifts = models.IntegerField(default=0)
 
     '''
     # time accessed
