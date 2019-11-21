@@ -12,3 +12,6 @@ class SkiResort(models.Model):
     total_trails = models.IntegerField(default=0)
     total_lifts = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.resort_name
+
