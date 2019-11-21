@@ -35,42 +35,40 @@ class Command(BaseCommand):
 
             if 'heavenly' in url:
                 # assign text to variables
-                total_trails = int(trail_totals[3].get_text()[2:])
-                total_lifts = int(trail_totals[1].get_text()[2:])
+                new_total_trails = int(trail_totals[3].get_text()[2:])
+                new_total_lifts = int(trail_totals[1].get_text()[2:])
                 # assign ints to variables
-                acres_open = int(trails_summary_items[0].get_text())
-                terrain_percent = int(trails_summary_items[2].get_text())
-                trails_open = int(trails_summary_items[3].get_text())
-                lifts_open = int(trails_summary_items[1].get_text())
+                new_acres_open = int(trails_summary_items[0].get_text())
+                new_terrain_percent = int(trails_summary_items[2].get_text())
+                new_trails_open = int(trails_summary_items[3].get_text())
+                new_lifts_open = int(trails_summary_items[1].get_text())
 
                 name = "Heavenly"
 
-                #k = SkiResort.objects.get(resort_name__iexact = 'Heavenly')
 
             
             elif 'keystone' in url:
 
-                total_trails = int(trail_totals[2].get_text()[2:])
-                total_lifts = int(trail_totals[3].get_text()[2:])
+                new_total_trails = int(trail_totals[2].get_text()[2:])
+                new_total_lifts = int(trail_totals[3].get_text()[2:])
 
-                acres_open = int(trails_summary_items[0].get_text())
-                terrain_percent = int(trails_summary_items[1].get_text())
-                trails_open = int(trails_summary_items[2].get_text())
-                lifts_open = int(trails_summary_items[3].get_text())
+                new_acres_open = int(trails_summary_items[0].get_text())
+                new_terrain_percent = int(trails_summary_items[1].get_text())
+                new_trails_open = int(trails_summary_items[2].get_text())
+                new_lifts_open = int(trails_summary_items[3].get_text())
 
                 name = "Keystone"
 
-                #k = SkiResort.objects.get(resort_name__iexact = 'Keystone')
 
 
             ski_resort, created = SkiResort.objects.update_or_create(
                     resort_name = name,
-                    total_trails = total_trails,
-                    total_lifts = total_lifts,
-                    acres_open = acres_open,
-                    terrain_percent = terrain_percent,
-                    trails_open = trails_open,
-                    lifts_open = lifts_open,
+                    total_trails = new_total_trails,
+                    total_lifts = new_total_lifts,
+                    acres_open = new_acres_open,
+                    terrain_percent = new_terrain_percent,
+                    trails_open = new_trails_open,
+                    lifts_open = new_lifts_open,
                     )
 
             '''
