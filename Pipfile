@@ -15,6 +15,7 @@ gevent = "~=1.4"
 gunicorn = "~=19.9"
 psycopg2-binary = "~=2.8"
 requests = "~=2.22.0"
+responses = "~=0.10.7"
 whitenoise = {extras = ["brotli"],version = "~=4.1"}
 
 [dev-packages]
