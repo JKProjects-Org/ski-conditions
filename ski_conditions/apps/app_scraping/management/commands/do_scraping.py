@@ -14,10 +14,10 @@ class Command(BaseCommand):
             'https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
         url_heavenly = \
             'https://www.skiheavenly.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
-        
+
         # place urls in list, loop over them
         url_list = [url_keystone, url_heavenly]
-        
+
         for url in url_list:
             page = requests.get(url)
 
@@ -58,10 +58,10 @@ class Command(BaseCommand):
                 name = "Keystone"
 
             ski_resort, created = SkiResort.objects.update_or_create(
-                    resort_name = name,
-                    total_trails = new_total_trails,
-                    total_lifts = new_total_lifts,
-                    defaults = {
+                    resort_name=name,
+                    total_trails=new_total_trails,
+                    total_lifts=new_total_lifts,
+                    defaults={
                         'acres_open': new_acres_open,
                         'terrain_percent': new_terrain_percent,
                         'trails_open': new_trails_open,

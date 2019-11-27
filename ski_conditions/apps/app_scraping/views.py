@@ -12,13 +12,13 @@ from .models import SkiResort
 def index(request):
     # run management command to do scraping from here for now
     # TODO: put in cronjob
-    #management.call_command('do_scraping')
+    # management.call_command('do_scraping')
 
     # render views
     try:
         output = SkiResort.objects.all()
         template = loader.get_template('app_scraping/index.html')
-        context= {
+        context = {
                 'resort_list': output,
                 }
         return HttpResponse(template.render(context, request))

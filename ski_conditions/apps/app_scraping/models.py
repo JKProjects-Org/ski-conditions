@@ -14,4 +14,3 @@ class SkiResort(models.Model):
 
     def __str__(self):
         return self.resort_name
-
