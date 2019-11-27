@@ -1,7 +1,4 @@
-import environ
-import psycopg2
 from django.core import management
-from django.db import connection
 from django.http import HttpResponse
 from django.template import loader
 
@@ -19,8 +16,8 @@ def index(request):
         output = SkiResort.objects.all()
         template = loader.get_template('app_scraping/index.html')
         context = {
-                'resort_list': output,
-                }
+            'resort_list': output,
+            }
         return HttpResponse(template.render(context, request))
     except Exception as e:
         print(e)
