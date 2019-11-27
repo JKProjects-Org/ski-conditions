@@ -55,6 +55,31 @@ class KeystoneScraper(AbstractVailScraper):
             'lifts_open': new_lifts_open,
         }
 
+class NorthstarScraper(AbstractVailScraper):
+    name = 'Northstar'
+    url = 'https://www.northstarcalifornia.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
+
+    def scrape(self):
+        trail_totals, trails_summary_items = self._common_scrape()
+
+        new_total_trails = int(trail_totals[2].get_text()[2:])
+        new_total_lifts = int(trail_totals[1].get_text()[2:])
+
+        new_acres_open = int(trails_summary_items[2].get_text())
+        new_terrain_percent = int(trails_summary_items[3].get_text())
+        new_trails_open = int(trails_summary_items[1].get_text())
+        new_lifts_open = int(trails_summary_items[0].get_text())
+
+        # TODO Use a struct or other data structure
+        return {
+            'total_trails': new_total_trails,
+            'total_lifts': new_total_lifts,
+            'acres_open': new_acres_open,
+            'terrain_percent': new_terrain_percent,
+            'trails_open': new_trails_open,
+            'lifts_open': new_lifts_open,
+        }
+
 
 class HeavenlyScraper(AbstractVailScraper):
     name = 'Heavenly'
@@ -89,7 +114,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         scrapers = [
             KeystoneScraper(),
-            # HeavenlyScraper(),
+            HeavenlyScraper(),
+            NorthstarScraper(),
         ]
 
         for scraper in scrapers:
