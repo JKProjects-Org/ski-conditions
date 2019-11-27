@@ -4,7 +4,7 @@ import pytest
 import responses
 from django.core import management
 
-from ..management.commands.do_scraping import KeystoneScraper, HeavenlyScraper, NorthstarScraper
+from ..management.commands.do_scraping import HeavenlyScraper, KeystoneScraper, NorthstarScraper
 from ..models import SkiResort
 
 
@@ -50,4 +50,3 @@ def test_scraping():
     assert northstar.total_trails == 100
     assert northstar.lifts_open == 0
     assert northstar.total_lifts == 20
-

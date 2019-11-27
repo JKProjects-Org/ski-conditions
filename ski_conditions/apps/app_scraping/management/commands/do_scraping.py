@@ -55,6 +55,7 @@ class KeystoneScraper(AbstractVailScraper):
             'lifts_open': new_lifts_open,
         }
 
+
 class NorthstarScraper(AbstractVailScraper):
     name = 'Northstar'
     url = 'https://www.northstarcalifornia.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
