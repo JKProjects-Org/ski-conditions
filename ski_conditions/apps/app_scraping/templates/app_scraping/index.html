@@ -6,6 +6,13 @@
         <p>Lifts Open: {{ resort.lifts_open }}/{{ resort.total_lifts }}</p>
         <p>Acres Open: {{ resort.acres_open }}</p>
         <p>Terrain Open: {{ resort.terrain_percent }}%</p>
+        <p>
+        <p>Overnight Snowfall: {{ resort.overnight_snowfall }} in</p>
+        <p>24 Hour Snowfall: {{ resort.twenty_four_hour_snowfall }} in</p>
+        <p>48 Hour Snowfall: {{ resort.forty_eight_hour_snowfall }} in</p>
+        <p>7 Day Snowfall: {{ resort.seven_day_snowfall }} in</p>
+        <p>Base Depth: {{ resort.base_depth }} in</p>
+        <p>Current Season Total: {{ resort.current_season }} in</p>
     {% endfor %}
     </ul>
 {% else %}
