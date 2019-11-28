@@ -4,9 +4,7 @@ from django.template import loader
 from .models import SkiResort
 
 
-# Create your views here.
 def index(request):
-    # render views
     output = SkiResort.objects.all()
     template = loader.get_template('app_scraping/index.html')
     context = {
