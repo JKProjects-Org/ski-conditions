@@ -35,6 +35,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    'ski_conditions.apps.app_scraping',
     'ski_conditions.apps.core',
 ]
 
