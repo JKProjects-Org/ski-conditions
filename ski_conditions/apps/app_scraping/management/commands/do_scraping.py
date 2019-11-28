@@ -1,3 +1,6 @@
+import json
+import re
+
 import requests
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand
@@ -9,6 +12,17 @@ from ski_conditions.apps.app_scraping.models import SkiResort
 class AbstractScraper:
     def scrape(self):
         pass
+
+
+class AbstractScriptScraper(AbstractScraper):
+    def _common_scrape(self):
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.text, 'html.parser')
+
+        # search for javascript
+        script_items = soup.find_all('script', type='text/javascript')
+
+        return script_items
 
 
 class AbstractVailScraper(AbstractScraper):
@@ -109,10 +123,110 @@ class HeavenlyScraper(AbstractVailScraper):
         }
 
 
+class KirkwoodSnowReport(AbstractScriptScraper):
+    name = 'Kirkwood'
+    url = 'https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
+
+    def scrape(self):
+        script_items = self._common_scrape()
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[1].text
+
+        # create regex pattern to find snowReportData json
+        # only grabs stuff in parens
+        pattern = re.compile("snowReportData = ({.*})")
+        # returns a list, grab first and only element
+        snow_data = re.findall(pattern, script_snow_report)[0]
+
+        # use json module to read json snow_data
+        json_snow_data = json.loads(snow_data)
+
+        return json_snow_data
+
+    def unpack_json(self, json_data):
+
+        return {
+            'overnight': json_data['OvernightSnowfall']['Inches'],
+            '24hr': json_data['TwentyFourHourSnowfall']['Inches'],
+            '48hr': json_data['FortyEightHourSnowfall']['Inches'],
+            '7day': json_data['SevenDaySnowfall']['Inches'],
+            'base_depth': json_data['BaseDepth']['Inches'],
+            'current_season': json_data['CurrentSeason']['Inches'],
+        }
+
+
+class HeavenlySnowReport(AbstractScriptScraper):
+    name = 'Heavenly'
+    url = 'https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
+
+    def scrape(self):
+        script_items = self._common_scrape()
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[1].text
+
+        # create regex pattern to find snowReportData json
+        # only grabs stuff in parens
+        pattern = re.compile("snowReportData = ({.*})")
+        # returns a list, grab first and only element
+        snow_data = re.findall(pattern, script_snow_report)[0]
+
+        # use json module to read json snow_data
+        json_snow_data = json.loads(snow_data)
+
+        return json_snow_data
+
+    def unpack_json(self, json_data):
+
+        return {
+            'overnight': json_data['OvernightSnowfall']['Inches'],
+            '24hr': json_data['TwentyFourHourSnowfall']['Inches'],
+            '48hr': json_data['FortyEightHourSnowfall']['Inches'],
+            '7day': json_data['SevenDaySnowfall']['Inches'],
+            'base_depth': json_data['BaseDepth']['Inches'],
+            'current_season': json_data['CurrentSeason']['Inches'],
+        }
+
+
+class NorthstarSnowReport(AbstractScriptScraper):
+    name = 'Northstar'
+    url = 'https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
+
+    def scrape(self):
+        script_items = self._common_scrape()
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[1].text
+
+        # create regex pattern to find snowReportData json
+        # only grabs stuff in parens
+        pattern = re.compile("snowReportData = ({.*})")
+        # returns a list, grab first and only element
+        snow_data = re.findall(pattern, script_snow_report)[0]
+
+        # use json module to read json snow_data
+        json_snow_data = json.loads(snow_data)
+
+        return json_snow_data
+
+    def unpack_json(self, json_data):
+
+        return {
+            'overnight': json_data['OvernightSnowfall']['Inches'],
+            '24hr': json_data['TwentyFourHourSnowfall']['Inches'],
+            '48hr': json_data['FortyEightHourSnowfall']['Inches'],
+            '7day': json_data['SevenDaySnowfall']['Inches'],
+            'base_depth': json_data['BaseDepth']['Inches'],
+            'current_season': json_data['CurrentSeason']['Inches'],
+        }
+
+
 class Command(BaseCommand):
     help = "Scrapes ski resort website and updates database"
 
     def handle(self, *args, **options):
+        # Trail and Lift Conditions
         scrapers = [
             KeystoneScraper(),
             HeavenlyScraper(),
@@ -132,6 +246,30 @@ class Command(BaseCommand):
                     'trails_open': scraped['trails_open'],
                     'lifts_open': scraped['lifts_open'],
                     'total_lifts': scraped['total_lifts'],
+                }
+            )
+
+        # Snow Conditions
+        snow_reports = [
+            KirkwoodSnowReport(),
+            HeavenlySnowReport(),
+            NorthstarSnowReport(),
+        ]
+
+        for snow in snow_reports:
+            name = snow.name
+            snow_json_data = snow.scrape()
+            snow_data = snow.unpack_json(snow_json_data)
+
+            SkiResort.objects.update_or_create(
+                resort_name=name,
+                defaults={
+                    'overnight_snowfall': snow_data['overnight'],
+                    'twenty_four_hour_snowfall': snow_data['24hr'],
+                    'forty_eight_hour_snowfall': snow_data['48hr'],
+                    'seven_day_snowfall': snow_data['7day'],
+                    'base_depth': snow_data['base_depth'],
+                    'current_season': snow_data['current_season'],
                 }
             )
 
