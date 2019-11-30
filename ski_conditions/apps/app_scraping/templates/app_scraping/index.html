@@ -1,12 +1,16 @@
 {% if resort_list %}
     <ul>
     {% for resort in resort_list %}
-        <li>{{ resort.resort_name }}</li>
+    <li><b>{{ resort.resort_name }}</b></li>
         <p>Trails Open: {{ resort.trails_open }}/{{ resort.total_trails }}</p>
+            <ul>
+            <li>Black Diamonds Open: {{ resort.black_diamonds_open }}</li>
+            <li>Double Black Diamonds Open: {{ resort.double_black_diamonds_open }}</li>
+            </ul>
         <p>Lifts Open: {{ resort.lifts_open }}/{{ resort.total_lifts }}</p>
+        <p>Lifts On Hold: {{ resort.lifts_on_hold }}</p>
         <p>Acres Open: {{ resort.acres_open }}</p>
         <p>Terrain Open: {{ resort.terrain_percent }}%</p>
-        <p>
         <p>Overnight Snowfall: {{ resort.overnight_snowfall }} in</p>
         <p>24 Hour Snowfall: {{ resort.twenty_four_hour_snowfall }} in</p>
         <p>48 Hour Snowfall: {{ resort.forty_eight_hour_snowfall }} in</p>
