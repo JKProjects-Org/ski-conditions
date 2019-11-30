@@ -19,10 +19,7 @@ class AbstractScriptScraper(AbstractScraper):
         page = requests.get(self.url)
         soup = BeautifulSoup(page.text, 'html.parser')
 
-        # search for javascript
-        script_items = soup.find_all('script', type='text/javascript')
-
-        return script_items
+        return soup
 
 
 class AbstractVailScraper(AbstractScraper):
@@ -42,6 +39,50 @@ class AbstractVailScraper(AbstractScraper):
         trail_totals = trails_summary.find_all(class_='c118__number2--v1')
 
         return (trail_totals, trails_summary_items)
+
+    def terrain_status(self):
+        # gets info on individual lifts and trails, such as status
+        page = requests.get(self.url)
+        soup = BeautifulSoup(page.text, 'html.parser')
+
+        # need to look through script to get rest of values
+        pattern = re.compile("FR.TerrainStatusFeed = ({.*})")
+        regex_find = soup.find_all('script', text=pattern)
+        # has numbers for Status. ex. Status = 0 or 1
+        regex_find_numbers = regex_find[0].text
+        # has words for Status, Type. ex. Status = Open, Type = Black
+        regex_find_words = regex_find[1].text
+
+        # need to apply regex again to get just the json part
+        status_numbers = re.findall(pattern, regex_find_numbers)[0]
+        json_data_numbers = json.loads(status_numbers)
+        json_lifts_numbers = json_data_numbers['Lifts']
+
+        status_words = re.findall(pattern, regex_find_words)[0]
+        json_data_words = json.loads(status_words)
+        json_trails_words = json_data_words['GroomingAreas']
+        # fields: Id, Name, Type (Green, Blue, Black, DoubleBlack), IsOpen (True, False)
+        json_lifts_words = json_data_words['Lifts']
+        # fields: Name, Status (Open, Closed, OnHold), Type, SortOrder, Mountain
+
+        return json_trails_words, json_lifts_words
+
+    def trail_specifics(self, json_trails_words):
+        black_diamonds_open = 0
+        double_black_diamonds_open = 0
+        # go through each section of mountain, ex. frontside, backside (defined by vail)
+        for area in json_trails_words:
+            # tally runs in this area, ex. frontside
+            area_runs = area['Runs']
+            for run in area_runs:
+                if run['IsOpen']:
+                    # tally number of black diamond runs open
+                    if run['Type'] == 'Black':
+                        black_diamonds_open += 1
+                    elif run['Type'] == 'DoubleBlack':
+                        double_black_diamonds_open += 1
+
+        return black_diamonds_open, double_black_diamonds_open
 
 
 class KeystoneScraper(AbstractVailScraper):
@@ -80,10 +121,22 @@ class NorthstarScraper(AbstractVailScraper):
         new_total_trails = int(trail_totals[2].get_text()[2:])
         new_total_lifts = int(trail_totals[1].get_text()[2:])
 
-        new_acres_open = int(trails_summary_items[2].get_text())
+        new_acres_open = int(trails_summary_items[0].get_text())
         new_terrain_percent = int(trails_summary_items[3].get_text())
-        new_trails_open = int(trails_summary_items[1].get_text())
-        new_lifts_open = int(trails_summary_items[0].get_text())
+        new_trails_open = int(trails_summary_items[2].get_text())
+        new_lifts_open = int(trails_summary_items[1].get_text())
+
+        # get json from site script containing trail, lift specifics
+        json_trails_words, json_lifts_words = self.terrain_status()
+
+        # get number of black diamond, double black diamonds open
+        black_diamonds_open, double_black_diamonds_open = self.trail_specifics(json_trails_words)
+
+        # get number of lifts on hold
+        lifts_on_hold = 0
+        for lift in json_lifts_words:
+            if lift['Status'] == 'OnHold':
+                lifts_on_hold += 1
 
         # TODO Use a struct or other data structure
         return {
@@ -93,6 +146,70 @@ class NorthstarScraper(AbstractVailScraper):
             'terrain_percent': new_terrain_percent,
             'trails_open': new_trails_open,
             'lifts_open': new_lifts_open,
+            'lifts_on_hold': lifts_on_hold,
+            'black_diamonds_open': black_diamonds_open,
+            'double_black_diamonds_open': double_black_diamonds_open,
+        }
+
+
+class KirkwoodScraper(AbstractVailScraper):
+    name = 'Kirkwood'
+    url = 'https://www.kirkwood.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx'
+
+    def scrape(self):
+        trail_totals, trails_summary_items = self._common_scrape()
+
+        # only acres open and terrain percent are shown on site
+        new_acres_open = int(trails_summary_items[1].get_text())
+        new_terrain_percent = int(trails_summary_items[0].get_text())
+
+        # TODO: put the following in some function
+        json_trails_words, json_lifts_words = self.terrain_status()
+
+        # GroomingAreas/trails = [{frontside,runs[]}, {backside,runs[]}]
+        # to make applicable to all resorts, go through each element in GroomingAreas list
+        new_trails_open = 0
+        new_total_trails = 0
+        new_lifts_open = 0
+        new_total_lifts = 0
+
+        # trail and lift specifics
+        black_diamonds_open = 0
+        double_black_diamonds_open = 0
+        lifts_on_hold = 0
+
+        # go through each section of mountain, ex. frontside, backside (defined by vail)
+        for area in json_trails_words:
+            # tally runs in this area, ex. frontside
+            area_runs = area['Runs']
+            for run in area_runs:
+                new_total_trails += 1
+                if run['IsOpen']:
+                    new_trails_open += 1
+                    # tally number of black diamond runs open
+                    if run['Type'] == 'Black':
+                        black_diamonds_open += 1
+                    elif run['Type'] == 'DoubleBlack':
+                        double_black_diamonds_open += 1
+
+        # tally number of lifts open
+        for lift in json_lifts_words:
+            new_total_lifts += 1
+            if lift['Status'] == 'Open':
+                new_lifts_open += 1
+            elif lift['Status'] == 'OnHold':
+                lifts_on_hold += 1
+
+        return {
+            'total_trails': new_total_trails,
+            'total_lifts': new_total_lifts,
+            'acres_open': new_acres_open,
+            'terrain_percent': new_terrain_percent,
+            'trails_open': new_trails_open,
+            'lifts_open': new_lifts_open,
+            'lifts_on_hold': lifts_on_hold,
+            'black_diamonds_open': black_diamonds_open,
+            'double_black_diamonds_open': double_black_diamonds_open,
         }
 
 
@@ -113,6 +230,18 @@ class HeavenlyScraper(AbstractVailScraper):
         new_trails_open = int(trails_summary_items[3].get_text())
         new_lifts_open = int(trails_summary_items[1].get_text())
 
+        # get json from site script containing trail, lift specifics
+        json_trails_words, json_lifts_words = self.terrain_status()
+
+        # get number of black diamond, double black diamonds open
+        black_diamonds_open, double_black_diamonds_open = self.trail_specifics(json_trails_words)
+
+        # get number of lifts on hold
+        lifts_on_hold = 0
+        for lift in json_lifts_words:
+            if lift['Status'] == 'OnHold':
+                lifts_on_hold += 1
+
         return {
             'total_trails': new_total_trails,
             'total_lifts': new_total_lifts,
@@ -120,6 +249,9 @@ class HeavenlyScraper(AbstractVailScraper):
             'terrain_percent': new_terrain_percent,
             'trails_open': new_trails_open,
             'lifts_open': new_lifts_open,
+            'lifts_on_hold': lifts_on_hold,
+            'black_diamonds_open': black_diamonds_open,
+            'double_black_diamonds_open': double_black_diamonds_open,
         }
 
 
@@ -128,7 +260,8 @@ class KirkwoodSnowReport(AbstractScriptScraper):
     url = 'https://www.kirkwood.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
 
     def scrape(self):
-        script_items = self._common_scrape()
+        soup = self._common_scrape()
+        script_items = soup.find_all('script', type='text/javascript')
 
         # get script body that contains snow report numbers
         script_snow_report = script_items[1].text
@@ -161,7 +294,8 @@ class HeavenlySnowReport(AbstractScriptScraper):
     url = 'https://www.skiheavenly.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
 
     def scrape(self):
-        script_items = self._common_scrape()
+        soup = self._common_scrape()
+        script_items = soup.find_all('script', type='text/javascript')
 
         # get script body that contains snow report numbers
         script_snow_report = script_items[1].text
@@ -194,7 +328,8 @@ class NorthstarSnowReport(AbstractScriptScraper):
     url = 'https://www.northstarcalifornia.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'
 
     def scrape(self):
-        script_items = self._common_scrape()
+        soup = self._common_scrape()
+        script_items = soup.find_all('script', type='text/javascript')
 
         # get script body that contains snow report numbers
         script_snow_report = script_items[1].text
@@ -228,9 +363,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Trail and Lift Conditions
         scrapers = [
-            KeystoneScraper(),
             HeavenlyScraper(),
             NorthstarScraper(),
+            KirkwoodScraper(),
         ]
 
         for scraper in scrapers:
@@ -246,6 +381,9 @@ class Command(BaseCommand):
                     'trails_open': scraped['trails_open'],
                     'lifts_open': scraped['lifts_open'],
                     'total_lifts': scraped['total_lifts'],
+                    'lifts_on_hold': scraped['lifts_on_hold'],
+                    'black_diamonds_open': scraped['black_diamonds_open'],
+                    'double_black_diamonds_open': scraped['double_black_diamonds_open'],
                 }
             )
 
