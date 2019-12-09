@@ -17,7 +17,7 @@ def twitter(request):
         <a class="twitter-timeline" data-width="480" data-height="600" href="https://twitter.com/HVconditions?ref_src=twsrc%5Etfw">Tweets by HVconditions</a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-        <a class="twitter-timeline" data-width="480" data-height="600" href="https://twitter.com/northstarmtn?ref_src=twsrc%5Etfw">Tweets by northstarmtn</a> 
+        <a class="twitter-timeline" data-width="480" data-height="600" data-theme="dark" href="https://twitter.com/northstarmtn?ref_src=twsrc%5Etfw">Tweets by northstarmtn</a> 
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
         <a class="twitter-timeline" data-width="480" data-height="600" href="https://twitter.com/KWconditions?ref_src=twsrc%5Etfw">Tweets by KWconditions</a> 

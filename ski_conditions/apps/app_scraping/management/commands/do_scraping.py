@@ -121,7 +121,8 @@ class NorthstarScraper(AbstractVailScraper):
         new_total_trails = int(trail_totals[2].get_text()[2:])
         new_total_lifts = int(trail_totals[1].get_text()[2:])
 
-        new_acres_open = int(trails_summary_items[0].get_text())
+        # remove comma from new_acres_open if present)
+        new_acres_open = int(trails_summary_items[0].get_text().replace(',', ''))
         new_terrain_percent = int(trails_summary_items[3].get_text())
         new_trails_open = int(trails_summary_items[2].get_text())
         new_lifts_open = int(trails_summary_items[1].get_text())
@@ -160,7 +161,7 @@ class KirkwoodScraper(AbstractVailScraper):
         trail_totals, trails_summary_items = self._common_scrape()
 
         # only acres open and terrain percent are shown on site
-        new_acres_open = int(trails_summary_items[1].get_text())
+        new_acres_open = int(trails_summary_items[1].get_text().replace(',', ''))
         new_terrain_percent = int(trails_summary_items[0].get_text())
 
         # TODO: put the following in some function
@@ -225,7 +226,8 @@ class HeavenlyScraper(AbstractVailScraper):
         new_total_lifts = int(trail_totals[1].get_text()[2:])
 
         # assign ints to variables
-        new_acres_open = int(trails_summary_items[0].get_text())
+        new_acres_open = int(trails_summary_items[0].get_text().replace(',', ''))
+        
         new_terrain_percent = int(trails_summary_items[2].get_text())
         new_trails_open = int(trails_summary_items[3].get_text())
         new_lifts_open = int(trails_summary_items[1].get_text())
