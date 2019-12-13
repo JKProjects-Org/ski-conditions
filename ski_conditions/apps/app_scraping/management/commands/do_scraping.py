@@ -227,7 +227,6 @@ class HeavenlyScraper(AbstractVailScraper):
 
         # assign ints to variables
         new_acres_open = int(trails_summary_items[0].get_text().replace(',', ''))
-        
         new_terrain_percent = int(trails_summary_items[2].get_text())
         new_trails_open = int(trails_summary_items[3].get_text())
         new_lifts_open = int(trails_summary_items[1].get_text())
@@ -338,7 +337,7 @@ class NorthstarSnowReport(AbstractScriptScraper):
 
     def scrape(self):
         soup = self._common_scrape()
-        
+
         # create regex pattern to find snowReportData json
         # only grabs stuff in parens
         pattern = re.compile("snowReportData = ({.*})")

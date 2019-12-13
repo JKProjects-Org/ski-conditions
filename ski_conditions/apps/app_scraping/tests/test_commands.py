@@ -4,8 +4,9 @@ import pytest
 import responses
 from django.core import management
 
-from ..management.commands.do_scraping import HeavenlyScraper, KirkwoodScraper, NorthstarScraper,\
-        KirkwoodSnowReport, HeavenlySnowReport, NorthstarSnowReport
+from ..management.commands.do_scraping import (
+    HeavenlyScraper, HeavenlySnowReport, KirkwoodScraper, KirkwoodSnowReport, NorthstarScraper, NorthstarSnowReport
+)
 from ..models import SkiResort
 
 
@@ -32,7 +33,6 @@ def test_scraping():
 
     body_Northstar_snow = open(os.path.join(os.path.dirname(__file__), 'data', 'northstar_snow.html'))
     responses.add(responses.GET, NorthstarSnowReport.url, status=200, body=body_Northstar_snow.read())
-
 
     management.call_command('do_scraping')
 
@@ -66,7 +66,6 @@ def test_scraping():
     assert heavenly.base_depth == 30
     assert heavenly.current_season == 109
 
-
     northstar = SkiResort.objects.get(resort_name='Northstar')
     assert northstar.acres_open == 1182
     assert northstar.terrain_percent == 37
@@ -80,4 +79,3 @@ def test_scraping():
     assert northstar.seven_day_snowfall == 28
     assert northstar.base_depth == 46
     assert northstar.current_season == 113
-
