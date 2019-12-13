@@ -263,14 +263,17 @@ class KirkwoodSnowReport(AbstractScriptScraper):
 
     def scrape(self):
         soup = self._common_scrape()
-        script_items = soup.find_all('script', type='text/javascript')
-
-        # get script body that contains snow report numbers
-        script_snow_report = script_items[1].text
 
         # create regex pattern to find snowReportData json
         # only grabs stuff in parens
         pattern = re.compile("snowReportData = ({.*})")
+        # find html that contains pattern, will contain script tags
+        script_items = soup.find_all('script', text=pattern)
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[0].text
+
+        # use regex pattern to grab only json part
         # returns a list, grab first and only element
         snow_data = re.findall(pattern, script_snow_report)[0]
 
@@ -297,15 +300,19 @@ class HeavenlySnowReport(AbstractScriptScraper):
 
     def scrape(self):
         soup = self._common_scrape()
-        script_items = soup.find_all('script', type='text/javascript')
-
-        # get script body that contains snow report numbers
-        script_snow_report = script_items[1].text
 
         # create regex pattern to find snowReportData json
         # only grabs stuff in parens
         pattern = re.compile("snowReportData = ({.*})")
+        # find html that contains pattern, will contain script tags
+        script_items = soup.find_all('script', text=pattern)
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[0].text
+
+        # use regex pattern to grab only json part
         # returns a list, grab first and only element
+
         snow_data = re.findall(pattern, script_snow_report)[0]
 
         # use json module to read json snow_data
@@ -331,15 +338,19 @@ class NorthstarSnowReport(AbstractScriptScraper):
 
     def scrape(self):
         soup = self._common_scrape()
-        script_items = soup.find_all('script', type='text/javascript')
-
-        # get script body that contains snow report numbers
-        script_snow_report = script_items[1].text
-
+        
         # create regex pattern to find snowReportData json
         # only grabs stuff in parens
         pattern = re.compile("snowReportData = ({.*})")
+        # find html that contains pattern, will contain script tags
+        script_items = soup.find_all('script', text=pattern)
+
+        # get script body that contains snow report numbers
+        script_snow_report = script_items[0].text
+
+        # use regex pattern to grab only json part
         # returns a list, grab first and only element
+
         snow_data = re.findall(pattern, script_snow_report)[0]
 
         # use json module to read json snow_data
