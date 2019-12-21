@@ -8,7 +8,6 @@ from django.core.management.base import BaseCommand
 from ski_conditions.apps.app_scraping.models import SkiResort
 
 
-# TODO Use the abc library
 class AbstractScraper:
     def scrape(self):
         pass
