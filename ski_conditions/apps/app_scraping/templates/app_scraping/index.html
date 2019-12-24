@@ -19,6 +19,7 @@
         <p>Current Season Total: {{ resort.current_season }} in</p>
     {% endfor %}
     </ul>
+    <a href="{% url 'scraping:twitter' %}">Twitter Feeds</a>
 {% else %}
     <p>No resorts available</p>
 {% endif %}
