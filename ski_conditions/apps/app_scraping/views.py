@@ -9,5 +9,11 @@ def index(request):
     template = loader.get_template('app_scraping/index.html')
     context = {
         'resort_list': output,
-        }
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def twitter(request):
+    template = loader.get_template('app_scraping/twitter.html')
+    context = None
     return HttpResponse(template.render(context, request))

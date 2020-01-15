@@ -4,5 +4,11 @@
 
 {% block content %}
     <h1 class="cover-heading">Ski Conditions</h1>
-    <p class="lead">We should put some content here!</p>
+    <p class="lead">Tracking snowfall, trail openings, and lift status at:</p>
+    <li>Kirkwood</li>
+    <li>Heavenly</li>
+    <li>Northstar</li>
+    <a href="{% url 'scraping:index' %}">Resort Conditions</a>
+    <p>
+    <a href="{% url 'scraping:twitter' %}">Resort Twitter Feeds</a>
 {% endblock %}
