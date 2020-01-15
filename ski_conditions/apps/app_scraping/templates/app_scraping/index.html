@@ -1,3 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Ski Conditions{% endblock %}
+
+{% block content %}
+
 {% if resort_list %}
     <ul>
     {% for resort in resort_list %}
@@ -24,3 +30,4 @@
     <p>No resorts available</p>
 {% endif %}
 
+{% endblock %}
