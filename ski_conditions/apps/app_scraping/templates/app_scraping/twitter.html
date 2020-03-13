@@ -3,7 +3,12 @@
 {% block title %}Twitter Feeds{% endblock %}
 
 {% block content %}
-
+<h1 class="cover-heading">Twitter Feeds</h1>
+<p>
+<a href="{% url 'home' %}">Home</a>
+<br/>
+<a href="{% url 'scraping:index' %}">Conditions</a>
+</p>
 
 <a class="twitter-timeline" data-width="480" data-height="600"
 href="https://twitter.com/HVconditions?ref_src=twsrc%5Etfw">Tweets by HVconditions</a>
@@ -17,6 +22,8 @@ href="https://twitter.com/northstarmtn?ref_src=twsrc%5Etfw">Tweets by northstarm
 href="https://twitter.com/KWconditions?ref_src=twsrc%5Etfw">Tweets by KWconditions</a>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
+<p>
 <a href="{% url 'scraping:index' %}">Conditions</a>
+</p>
 
 {% endblock %}

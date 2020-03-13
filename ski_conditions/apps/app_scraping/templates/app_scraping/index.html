@@ -2,17 +2,24 @@
 
 {% block title %}Ski Conditions{% endblock %}
 
+
+
 {% block content %}
+<h1 class="cover-heading">Mountain Conditions</h1>
+
+<a href="{% url 'home' %}">Home</a>
+<br/>
+<a href="{% url 'scraping:twitter' %}">Twitter Feeds</a>
 
 {% if resort_list %}
     <ul>
     {% for resort in resort_list %}
     <li><b>{{ resort.resort_name }}</b></li>
-        <p>Trails Open: {{ resort.trails_open }}/{{ resort.total_trails }}</p>
+        <p>Trails Open: {{ resort.trails_open }}/{{ resort.total_trails }}
             <ul>
             <li>Black Diamonds Open: {{ resort.black_diamonds_open }}</li>
             <li>Double Black Diamonds Open: {{ resort.double_black_diamonds_open }}</li>
-            </ul>
+            </ul></p>
         <p>Lifts Open: {{ resort.lifts_open }}/{{ resort.total_lifts }}</p>
         <p>Lifts On Hold: {{ resort.lifts_on_hold }}</p>
         <p>Acres Open: {{ resort.acres_open }}</p>
@@ -25,9 +32,11 @@
         <p>Current Season Total: {{ resort.current_season }} in</p>
     {% endfor %}
     </ul>
+    <br/>
     <a href="{% url 'scraping:twitter' %}">Twitter Feeds</a>
 {% else %}
     <p>No resorts available</p>
 {% endif %}
 
 {% endblock %}
+
